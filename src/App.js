@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+
 import SurveyQuestions from './data/SurveyQuestionsData';
+import SurveyQuestionAnswerComponent from './SurveyQuestionAnswerComponent';
 
 class App extends Component {
 
@@ -19,14 +21,20 @@ class App extends Component {
       <div className="App">
         <h1>Welcome to the Basic Survey!</h1>
 
-        {!this.state.surveyStarted ? this.showWelcomeText(): this.displayQuestion(this.state.currentQuestionIndex)}
+        {!this.state.surveyStarted ? this.showWelcomeText(): this.displayQuestion()}
+
+        {this.state.surveyStarted ? this.showNavigationButtons(): null}
       </div>
     );
   }
 
-  displayQuestion = (questionIdx) => {
+  displayQuestion = () => {
+    let currentSurveyQuestion = SurveyQuestions.surveyQuestions[this.state.currentQuestionIndex];
+
     return (
-        <div> SURVEY STARTED!!! </div>
+      <SurveyQuestionAnswerComponent questionText={currentSurveyQuestion.text}
+                                     answers={currentSurveyQuestion.answers}
+                                     correctAnswer={currentSurveyQuestion.correctAnswer}/>
     );
   }
 
@@ -35,6 +43,7 @@ class App extends Component {
     this.setState({
       surveyStarted: true
     });
+
   }
 
   /**
@@ -55,6 +64,33 @@ class App extends Component {
     );
   }
 
+  showNavigationButtons = () => {
+    const previousEnabled = this.state.currentQuestionIndex > 0;
+    const nextEnabled = this.state.currentQuestionIndex < SurveyQuestions.surveyQuestions.length - 1;
+
+    return (
+        <div>
+          <button disabled={!previousEnabled} onClick={this.navigatePrevious}>Previous</button>
+          <button disabled={!nextEnabled} onClick={this.navigateNext}>Next</button>
+        </div>
+    );
+  }
+
+  navigateNext = () => {
+    const newIndex = this.state.currentQuestionIndex + 1;
+
+    this.setState({
+      currentQuestionIndex: newIndex
+    });
+  }
+
+  navigatePrevious = () => {
+    const newIndex = this.state.currentQuestionIndex - 1;
+
+    this.setState({
+      currentQuestionIndex: newIndex
+    });
+  }
 }
 
 export default App;
